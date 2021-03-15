@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+grand_anse_data_nb.xlsx
+grand_anse_dataforDRM.csv
+grand_anse_dataforDRM_nb.csv

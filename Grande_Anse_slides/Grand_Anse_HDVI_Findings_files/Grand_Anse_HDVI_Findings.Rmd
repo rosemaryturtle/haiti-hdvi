@@ -1,0 +1,374 @@
+---
+title: "Grand Anse, Haitii - Saftey Net Program"
+author: "Noimot Bakare"
+date: "3/8/2021"
+output: beamer_presentation
+---
+
+```{r Libraries, include=FALSE}
+library(rtrim)
+library(Hmisc)
+library(csv)
+library(foreign)
+library(stringr)              
+library(psych)
+
+library(collapse)
+##########################Summary Stats#############################
+library(data.table)
+library(stats)
+library(DataExplorer)
+library(reporttools)
+library(reshape)
+library(freqdist)
+library(knitr)
+library(rmarkdown)
+library(tinytex)
+library(markdown)
+library(summarytools)
+library(kableExtra)
+library(haven)
+library(survey)
+library(srvyr)
+library(ggplot2)
+
+#########################Graphics and visualization#################
+# library(plotly)
+# library(gganimate)
+# library(maptools)
+# library(maps)
+# library(ggmap)   
+##########################Data Wrangling##############################
+library(stringr)
+library(tidyverse)
+#library(tidyr)
+#library(plyr)
+library(dplyr)
+library(devtools) 
+library(pastecs)
+library(janitor)
+#########################3
+library(AER)
+library(sandwich)
+library(readxl)
+library(foreign)
+library(apa)
+# options(scipen=999)
+
+###calling libraries for graphs
+#library('ggplot2')
+library('scales')     # for scale_y_continuous(label = percent)
+library('ggthemes')   # for scale_fill_few('medium')
+#library(viridis)  #Purple green yellow collor palett
+library('ztable')     # format tables for reporting
+library(stargazer)
+library(texreg)
+library(fastDummies)
+
+library(readxl)
+library(tidyverse)
+library(haven)
+library(gt)
+library(janitor)
+library(FSA)
+
+grand_anse_dataforDRM_nb <- read.csv("~/Dropbox/grand_anse_data_nb.csv")
+
+```
+
+##  HDVI - Haiti's Deprivation and Vulnerability Index 
+**HDVI**
+
+ - Consists of 20 indicators of living conditions 
+ - Across 7 dimensions of vulnerability
+ - Is a  a number [0 <= HDVI <= 1] 
+ - The higher the HDVI the higher the household deprivation
+  
+
+ 
+##  Household Classification 
+  **Households are classified into 4 categories**
+  
+ - More Deprived
+ - Mid Deprived
+ - Less Deprived
+ - Not Deprived
+
+
+##  Objective: 
+> Of the 7 vulnerabiilty measures, food vulnerability is the variable of interest, because food consumption is a good predictor of a househod well-being. 
+
+> This analysis is the first stage in identifying the most vulnerable population in Grande Anse, Haiti. 
+
+## Data: 
+**Households were asked 3 series of questions regarding food security over the 4 weeks prior to the data collection/ survey interview period.**
+
+1. Absence of Food - If HH members experienced absence of food due to lack of resources.
+
+2. Hunnger - If HH members went to bed hungy because they could not eat sufficiently. 
+
+3. Restricted Consumptioon - If HH members were forced to fast during an entire day becuase there was not enough food. 
+
+**Possible Responses:**
+
+1. never
+2. sometimes 
+3. Often
+ 
+
+## Variables of Interest:
+
+In the 4 weeks prior to the interview date:
+
+ **Absence of Food**
+- cat_hh_no_food_at_all1  
+- cat_hh_no_food_at_all2
+- cat_hh_no_food_at_all3
+
+ **Forced to fast**
+- cat_hh_day_no_food1,   
+- cat_hh_day_no_food2
+- cat_hh_day_no_food3
+
+ **Went to bed hungry**
+- cat_hh_bed_hungry1
+- cat_hh_bed_hungry2
+- cat_hh_bed_hungry3
+
+
+
+```{r Data , include=FALSE}
+
+
+
+# #Pulling in socialll rrefistry data 
+# grand_anse <- read_excel("Dropbox/WB_GFDRR_STC/Grand_anse/grand_anse_dataforDRM_nb.xlsx")
+# 
+
+# grand_anse_dataforDRM_nb <- read_excel("Dropbox/WB_GFDRR_STC/Grand_anse/grand_anse_data_nb.xlsx")
+
+
+
+Gran_Anse <- grand_anse_dataforDRM_nb %>%  select(commune, urban, hhsize, relation_to_hhh, haitisdeprivationsandvulnerabili, mi_vulnerable, moins_vulnerable, non_vulnerable, plus_vulnerable, 
+cat_hh_no_food_at_all1,                      
+cat_hh_no_food_at_all2,
+cat_hh_no_food_at_all3,
+cat_hh_day_no_food1,     
+cat_hh_day_no_food2,
+cat_hh_day_no_food3,
+cat_hh_bed_hungry1,
+cat_hh_bed_hungry2, 
+cat_hh_bed_hungry3)
+
+Gran_Anse_1 <- Gran_Anse %>%   na.omit(Gran_Anse)
+
+Gran_Anse_1$HDVI <- Gran_Anse_1$haitisdeprivationsandvulnerabili
+
+Gran_Anse_1$no_vulnerability<- Gran_Anse_1$non_vulnerable
+Gran_Anse_1$less_vulnerability<- Gran_Anse_1$moins_vulnerable 
+Gran_Anse_1$mid_vulnerability<- Gran_Anse_1$mi_vulnerable 
+Gran_Anse_1$more_vulnerability<- Gran_Anse_1$plus_vulnerable 
+ 
+Gran_Anse_1 <- Gran_Anse_1 %>% select(-mi_vulnerable,-non_vulnerable,-moins_vulnerable, -plus_vulnerable, -haitisdeprivationsandvulnerabili )
+Gran_Anse_1<- as.data.frame(Gran_Anse_1)
+
+#Absence of Food 
+Gran_Anse_1$cat_hh_no_food_at_all1<- as.factor(Gran_Anse_1$cat_hh_no_food_at_all1)
+
+Gran_Anse_1$cat_hh_no_food_at_all2<- as.factor(Gran_Anse_1$cat_hh_no_food_at_all2)
+
+Gran_Anse_1$cat_hh_no_food_at_all3<- as.factor(Gran_Anse_1$cat_hh_no_food_at_all3)
+
+
+#FAST
+Gran_Anse_1$cat_hh_day_no_food1<- as.factor(Gran_Anse_1$cat_hh_day_no_food1)
+
+Gran_Anse_1$cat_hh_day_no_food2<- as.factor(Gran_Anse_1$cat_hh_day_no_food2)
+
+Gran_Anse_1$cat_hh_day_no_food3<- as.factor(Gran_Anse_1$cat_hh_day_no_food3)
+
+#Hunger
+Gran_Anse_1$cat_hh_bed_hungry1<- as.factor(Gran_Anse_1$cat_hh_bed_hungry1)
+
+Gran_Anse_1$cat_hh_bed_hungry2<- as.factor(Gran_Anse_1$cat_hh_bed_hungry2)
+
+Gran_Anse_1$cat_hh_bed_hungry3<- as.factor(Gran_Anse_1$cat_hh_bed_hungry3)
+
+
+
+#Mutating a single column 
+
+Gran_Anse_1 <- Gran_Anse_1 %>%
+  mutate(Bed_Hungery = case_when(
+    cat_hh_bed_hungry1 %in% "1" ~ "Never",
+    cat_hh_bed_hungry2 %in% "1" ~ "Sometimes",
+    cat_hh_bed_hungry3 %in% "1" ~ "Often"
+  ))
+
+  Gran_Anse_1 <- Gran_Anse_1 %>%
+  mutate(Bed_Hungery_depth = case_when(
+    cat_hh_bed_hungry1 %in% "1" ~ "1",
+    cat_hh_bed_hungry2 %in% "1" ~ "2",
+    cat_hh_bed_hungry3 %in% "1" ~ "3"
+  )) 
+  
+  
+  
+Gran_Anse_1 <- Gran_Anse_1 %>%
+  mutate(Absence_Food = case_when(
+    cat_hh_no_food_at_all1 %in% "1" ~ "Never",
+    cat_hh_no_food_at_all2 %in% "1" ~ "Sometimes",
+    cat_hh_no_food_at_all3 %in% "1" ~ "Often"
+  ))
+
+Gran_Anse_1 <- Gran_Anse_1 %>%
+  mutate(Absence_Food_depth = case_when(
+    cat_hh_no_food_at_all1 %in% "1" ~ "1",
+    cat_hh_no_food_at_all2 %in% "1" ~ "2",
+    cat_hh_no_food_at_all3 %in% "1" ~ "3"
+  )) 
+
+
+Gran_Anse_1 <- Gran_Anse_1 %>%
+  mutate(Restricted_Food = case_when(
+    cat_hh_day_no_food1 %in% "1" ~ "Never",
+    cat_hh_day_no_food2 %in% "1" ~ "Sometimes",
+    cat_hh_day_no_food3 %in% "1" ~ "Often"
+  ))
+
+Gran_Anse_1 <- Gran_Anse_1 %>%
+  mutate(Restricted_Food_depth = case_when(
+    cat_hh_day_no_food1 %in% "1" ~ "1",
+    cat_hh_day_no_food2 %in% "1" ~ "2",
+    cat_hh_day_no_food3 %in% "1" ~ "3"
+  )) 
+
+
+```
+
+## Summary Statistics
+
+```{r Summary Stat, echo=FALSE}
+
+stargazer(Gran_Anse_1 , type ='text', title="Summary Statistics", align=TRUE, column.sep.width = ".8pt", single.row = TRUE)
+
+#stargazer(Gran_Anse_1)
+# knitr::kable(Gran_Anse_1, caption = "Summary Statistics")
+```
+
+
+
+## Summary Statistics
+
+```{r Summary Stat2, echo=FALSE}
+
+stargazer(Gran_Anse_1) 
+
+#stargazer(Gran_Anse_1)
+# knitr::kable(Gran_Anse_1, caption = "Summary Statistics")
+```
+
+
+
+```{r Summary Stat3, echo=FALSE}
+
+kable(Gran_Anse_1)
+
+#stargazer(Gran_Anse_1)
+# knitr::kable(Gran_Anse_1, caption = "Summary Statistics")
+```
+```{r Plots, eval=FALSE, include=FALSE}
+# #Absence of Food
+# 
+# cdplot(cat_hh_no_food_at_all1 ~ HDVI, Gran_Anse_1, col=c("cornflowerblue", "orange"), main="Households that never experienced absence of food")
+# 
+
+```
+
+## Absence of food - Often
+
+```{r Plots1, echo=FALSE}
+cdplot(cat_hh_no_food_at_all3 ~ HDVI, Gran_Anse_1, col=c("lightslateblue","lightgreen"), main="Households that often experienced absence of food")
+
+```
+
+## Absence of food - Sometimes 
+
+```{r Plots2, echo=FALSE}
+ cdplot(cat_hh_no_food_at_all2 ~ HDVI, Gran_Anse_1, col=c("lightslateblue","lightgreen"), main="Households that sometimes experienced absence of food") 
+
+```
+
+## Forced to Fast - Often
+
+```{r Plots3, echo=FALSE}
+cdplot(cat_hh_day_no_food3 ~ HDVI, Gran_Anse_1, col= c("lightslateblue","lightgreen"), main="Forced to fast due to lack of food") 
+
+```
+
+
+## Forced to Fast - Sometimes 
+
+```{r Plots4, echo=FALSE}
+
+cdplot(cat_hh_day_no_food2 ~ HDVI, Gran_Anse_1,  col= c("lightslateblue","lightgreen"), main="Households that were sometimes forced to fast due to lack of food") 
+
+```
+
+## Went to bed Hungry - Often
+
+```{r Plots5, echo=FALSE}
+
+
+cdplot(cat_hh_bed_hungry3 ~ HDVI, Gran_Anse_1, col= c("lightslateblue","lightgreen"), main="Household that often go to bed hungry") 
+ 
+```
+
+
+## Went to bed Hungry - Sometimes
+```{r Plots6, echo=FALSE}
+
+cdplot(cat_hh_bed_hungry2 ~ HDVI, Gran_Anse_1, col= c("lightslateblue","lightgreen"), main="Household that sometimes go to bed hungry") 
+```
+
+
+## Population distribution - Gone to bed hungry 
+```{r Plots7, echo=FALSE}
+
+ggplot(Gran_Anse_1, aes(x = HDVI)) +  
+  geom_density(aes(group = Bed_Hungery, 
+                   colour = Bed_Hungery, 
+                   fill = Bed_Hungery),
+               alpha = 0.2) 
+
+
+```
+
+## Population distribution - Absence of Food 
+```{r Plots 8, echo=FALSE}
+
+
+
+ggplot(Gran_Anse_1, aes(x = HDVI)) +  
+  geom_density(aes(group = Absence_Food, 
+                   colour = Absence_Food, 
+                   fill = Absence_Food),
+               alpha = 0.2)
+
+
+```
+
+
+## Population distribution - Restricted Consumption
+```{r Plots 9, echo=FALSE}
+
+
+ggplot(Gran_Anse_1, aes(x = HDVI)) +  
+  geom_density(aes(group = Restricted_Food, 
+                   colour = Restricted_Food, 
+                   fill = Restricted_Food),
+               alpha = 0.2) 
+
+```
+
+
