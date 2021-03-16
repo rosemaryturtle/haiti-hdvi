@@ -397,28 +397,38 @@ p2<- ggplot(df, aes(TIME2, V2)) + geom_line() + labs(x=NULL) + scale_x_continuou
 ie <- function(cutoff, var) {
   tot_in <- Gran_Anse_1 %>% filter(HDVI >= cutoff)
   tot_in_nv <- tot_in %>% filter(.data[[var]] != "Often")
-  nrow(tot_in_nv) / nrow(tot_in)
+  nrow(tot_in_nv) / nrow(tot_in) * 100
+}
+
+ie_pop <- function(cutoff, var) {
+  sum(Gran_Anse_1$HDVI >= cutoff & Gran_Anse_1[[var]] != "Often")
 }
 
 ee <- function(cutoff, var) {
   tot_v <- Gran_Anse_1 %>% filter(.data[[var]] == "Never")
   tot_v_ex <- tot_v %>% filter(HDVI < cutoff)
-  nrow(tot_v_ex) / nrow(tot_v)
+  nrow(tot_v_ex) / nrow(tot_v) * 100
 }
 
 in_ex1 <- data.frame(cutoff = seq(0.1, 0.9, 0.1)) %>%
   mutate(label = paste("HDVI:", cutoff))
 in_ex1$in_err <- sapply(in_ex1$cutoff, ie, var = "Absence_Food")
+in_ex1$in_pop <- sapply(in_ex1$cutoff, ie_pop, var = "Absence_Food")
 in_ex1$ex_err <- sapply(in_ex1$cutoff, ee, var = "Absence_Food")
 
 ggplot(in_ex1, aes(in_err, ex_err)) +
+  geom_segment(aes(xend = in_err, yend = 0), color = "grey", linetype = 3) +
+  geom_text(aes(in_err, -2, label = in_pop), check_overlap = T, size = 3, color = "grey", angle = 45, hjust = "right") +
   geom_point(color = "cornflowerblue", size = 2) +
-  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 0.02, nudge_y = 0, check_overlap = T) +
-  geom_text(aes(x = 0.4, y = 0.35, label = "label = HDVI cutoff"), color = "grey") +
+  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 2, nudge_y = 0, check_overlap = T) +
+  geom_text(aes(x = 40, y = 20, label = "label = HDVI cutoff"), color = "cornflowerblue") +
   theme_minimal() +
-  theme(panel.grid.minor = element_blank()) +
-  labs(subtitle = "* vulnerable households defined as those who often experience absence of food",
-       x = "inclusion error", y = "exclusion error")
+  theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(), plot.subtitle = element_text(face = "italic", size = 9)) +
+  scale_y_continuous(name = "exclusion error (%)", limits = c(-10, 100),
+                     sec.axis = sec_axis(~.*sum(Gran_Anse_1$Absence_Food == "Never")/100, name = "exclusion error (population)")) +
+  scale_x_continuous(name = "inclusion error (%)", position = "top",
+                     sec.axis = dup_axis(name = "inclusion error (population)", labels = NULL)) +
+  labs(subtitle = "* vulnerable households defined as those who often experience absence of food")
 
 ```
 
@@ -427,16 +437,22 @@ ggplot(in_ex1, aes(in_err, ex_err)) +
 in_ex2 <- data.frame(cutoff = seq(0.1, 0.9, 0.1)) %>%
   mutate(label = paste("HDVI:", cutoff))
 in_ex2$in_err <- sapply(in_ex2$cutoff, ie, var = "Restricted_Food")
+in_ex2$in_pop <- sapply(in_ex2$cutoff, ie_pop, var = "Restricted_Food")
 in_ex2$ex_err <- sapply(in_ex2$cutoff, ee, var = "Restricted_Food")
 
 ggplot(in_ex2, aes(in_err, ex_err)) +
+  geom_segment(aes(xend = in_err, yend = 0), color = "grey", linetype = 3) +
+  geom_text(aes(in_err, -2, label = in_pop), check_overlap = T, size = 3, color = "grey", angle = 45, hjust = "right") +
   geom_point(color = "cornflowerblue", size = 2) +
-  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 0.02, nudge_y = 0, check_overlap = T) +
-  geom_text(aes(x = 0.4, y = 0.35, label = "label = HDVI cutoff"), color = "grey") +
+  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 2, nudge_y = 0, check_overlap = T) +
+  geom_text(aes(x = 40, y = 20, label = "label = HDVI cutoff"), color = "cornflowerblue") +
   theme_minimal() +
-  theme(panel.grid.minor = element_blank()) +
-  labs(subtitle = "* vulnerable households defined as those who often experience restricted food consumption",
-       x = "inclusion error", y = "exclusion error")
+  theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(), plot.subtitle = element_text(face = "italic", size = 9)) +
+  scale_y_continuous(name = "exclusion error (%)", limits = c(-10, 100),
+                     sec.axis = sec_axis(~.*sum(Gran_Anse_1$Absence_Food == "Never")/100, name = "exclusion error (population)")) +
+  scale_x_continuous(name = "inclusion error (%)", position = "top",
+                     sec.axis = dup_axis(name = "inclusion error (population)", labels = NULL)) +
+  labs(subtitle = "* vulnerable households defined as those who often experience restricted food consumption")
 
 ```
 
@@ -445,15 +461,21 @@ ggplot(in_ex2, aes(in_err, ex_err)) +
 in_ex3 <- data.frame(cutoff = seq(0.1, 0.9, 0.1)) %>%
   mutate(label = paste("HDVI:", cutoff))
 in_ex3$in_err <- sapply(in_ex3$cutoff, ie, var = "Bed_Hungery")
+in_ex3$in_pop <- sapply(in_ex3$cutoff, ie_pop, var = "Bed_Hungery")
 in_ex3$ex_err <- sapply(in_ex3$cutoff, ee, var = "Bed_Hungery")
 
 ggplot(in_ex3, aes(in_err, ex_err)) +
+  geom_segment(aes(xend = in_err, yend = 0), color = "grey", linetype = 3) +
+  geom_text(aes(in_err, -2, label = in_pop), check_overlap = T, size = 3, color = "grey", angle = 45, hjust = "right") +
   geom_point(color = "cornflowerblue", size = 2) +
-  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 0.02, nudge_y = 0, check_overlap = T) +
-  geom_text(aes(x = 0.4, y = 0.35, label = "label = HDVI cutoff"), color = "grey") +
+  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 2, nudge_y = 0, check_overlap = T) +
+  geom_text(aes(x = 40, y = 20, label = "label = HDVI cutoff"), color = "cornflowerblue") +
   theme_minimal() +
-  theme(panel.grid.minor = element_blank()) +
-  labs(subtitle = "* vulnerable households defined as those who often go to bed hungry",
-       x = "inclusion error", y = "exclusion error")
+  theme(panel.grid.minor = element_blank(), panel.grid.major.x = element_blank(), plot.subtitle = element_text(face = "italic", size = 9)) +
+  scale_y_continuous(name = "exclusion error (%)", limits = c(-10, 100),
+                     sec.axis = sec_axis(~.*sum(Gran_Anse_1$Absence_Food == "Never")/100, name = "exclusion error (population)")) +
+  scale_x_continuous(name = "inclusion error (%)", position = "top",
+                     sec.axis = dup_axis(name = "inclusion error (population)", labels = NULL)) +
+  labs(subtitle = "* vulnerable households defined as those who often experience restricted food consumption")
 
 ```
