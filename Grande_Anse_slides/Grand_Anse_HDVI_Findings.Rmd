@@ -1,5 +1,5 @@
 ---
-title: "Grand Anse, Haitii - Saftey Net Program"
+title: "Grand Anse, Haiti - Saftey Net Program"
 author: "Noimot Bakare"
 date: "3/8/2021"
 output: beamer_presentation
@@ -10,9 +10,8 @@ library(rtrim)
 library(Hmisc)
 library(csv)
 library(foreign)
-library(stringr)              
+library(stringr)
 library(psych)
-
 library(collapse)
 ##########################Summary Stats#############################
 library(data.table)
@@ -23,7 +22,7 @@ library(reshape)
 library(freqdist)
 library(knitr)
 library(rmarkdown)
-library(tinytex)
+# library(tinytex)
 library(markdown)
 library(summarytools)
 library(kableExtra)
@@ -64,35 +63,35 @@ library('ztable')     # format tables for reporting
 library(stargazer)
 library(texreg)
 library(fastDummies)
-
-library(readxl)
 library(tidyverse)
 library(haven)
 library(gt)
 library(janitor)
 library(FSA)
 
-grand_anse_dataforDRM_nb <- read.csv("~/Dropbox/grand_anse_data_nb.csv")
+# grand_anse_dataforDRM_nb <- read.csv("~/Dropbox/grand_anse_data_nb.csv")
+# grand_anse_dataforDRM_nb <- read_excel("../data/grand_anse_data_nb.xlsx")
+## I wrote a csv file with the cleaned-up dataframe (Gran_Anse) below, to avoid having to read from the original data each time.
 
 ```
 
 ##  HDVI - Haiti's Deprivation and Vulnerability Index 
 **HDVI**
 
- - Consists of 20 indicators of living conditions 
- - Across 7 dimensions of vulnerability
- - Is a  a number [0 <= HDVI <= 1] 
- - The higher the HDVI the higher the household deprivation
-  
+- Consists of 20 indicators of living conditions 
+- Across 7 dimensions of vulnerability
+- Is a  a number [0 <= HDVI <= 1] 
+- The higher the HDVI the higher the household deprivation
 
- 
+
+
 ##  Household Classification 
-  **Households are classified into 4 categories**
-  
- - More Deprived
- - Mid Deprived
- - Less Deprived
- - Not Deprived
+**Households are classified into 4 categories**
+
+- More Deprived
+- Mid Deprived
+- Less Deprived
+- Not Deprived
 
 
 ##  Objective: 
@@ -105,32 +104,32 @@ grand_anse_dataforDRM_nb <- read.csv("~/Dropbox/grand_anse_data_nb.csv")
 
 1. Absence of Food - If HH members experienced absence of food due to lack of resources.
 
-2. Hunnger - If HH members went to bed hungy because they could not eat sufficiently. 
+2. Hunger - If HH members went to bed hungry because they could not eat sufficiently. 
 
-3. Restricted Consumptioon - If HH members were forced to fast during an entire day becuase there was not enough food. 
+3. Restricted Consumption - If HH members were forced to fast during an entire day because there was not enough food. 
 
 **Possible Responses:**
 
 1. never
 2. sometimes 
 3. Often
- 
+
 
 ## Variables of Interest:
 
 In the 4 weeks prior to the interview date:
 
- **Absence of Food**
+**Absence of Food**
 - cat_hh_no_food_at_all1  
 - cat_hh_no_food_at_all2
 - cat_hh_no_food_at_all3
 
- **Forced to fast**
+**Forced to fast**
 - cat_hh_day_no_food1,   
 - cat_hh_day_no_food2
 - cat_hh_day_no_food3
 
- **Went to bed hungry**
+**Went to bed hungry**
 - cat_hh_bed_hungry1
 - cat_hh_bed_hungry2
 - cat_hh_bed_hungry3
@@ -141,7 +140,7 @@ In the 4 weeks prior to the interview date:
 
 
 
-# #Pulling in socialll rrefistry data 
+# #Pulling in social registry data 
 # grand_anse <- read_excel("Dropbox/WB_GFDRR_STC/Grand_anse/grand_anse_dataforDRM_nb.xlsx")
 # 
 
@@ -149,28 +148,27 @@ In the 4 weeks prior to the interview date:
 
 
 
-Gran_Anse <- grand_anse_dataforDRM_nb %>%  select(commune, urban, hhsize, relation_to_hhh, haitisdeprivationsandvulnerabili, mi_vulnerable, moins_vulnerable, non_vulnerable, plus_vulnerable, 
-cat_hh_no_food_at_all1,                      
-cat_hh_no_food_at_all2,
-cat_hh_no_food_at_all3,
-cat_hh_day_no_food1,     
-cat_hh_day_no_food2,
-cat_hh_day_no_food3,
-cat_hh_bed_hungry1,
-cat_hh_bed_hungry2, 
-cat_hh_bed_hungry3)
+# Gran_Anse <- grand_anse_dataforDRM_nb %>%
+#   select(commune, urban, hhsize, relation_to_hhh, haitisdeprivationsandvulnerabili, mi_vulnerable, moins_vulnerable, non_vulnerable, plus_vulnerable, 
+#          cat_hh_no_food_at_all1,                      
+#          cat_hh_no_food_at_all2,
+#          cat_hh_no_food_at_all3,
+#          cat_hh_day_no_food1,     
+#          cat_hh_day_no_food2,
+#          cat_hh_day_no_food3,
+#          cat_hh_bed_hungry1,
+#          cat_hh_bed_hungry2, 
+#          cat_hh_bed_hungry3)
 
-Gran_Anse_1 <- Gran_Anse %>%   na.omit(Gran_Anse)
+# Made new csv with Gran_Anse dataframe
+# write_csv(Gran_Anse, "../data/Gran_Anse.csv")
+Gran_Anse <- read_csv("../data/Gran_Anse.csv")
 
-Gran_Anse_1$HDVI <- Gran_Anse_1$haitisdeprivationsandvulnerabili
-
-Gran_Anse_1$no_vulnerability<- Gran_Anse_1$non_vulnerable
-Gran_Anse_1$less_vulnerability<- Gran_Anse_1$moins_vulnerable 
-Gran_Anse_1$mid_vulnerability<- Gran_Anse_1$mi_vulnerable 
-Gran_Anse_1$more_vulnerability<- Gran_Anse_1$plus_vulnerable 
- 
-Gran_Anse_1 <- Gran_Anse_1 %>% select(-mi_vulnerable,-non_vulnerable,-moins_vulnerable, -plus_vulnerable, -haitisdeprivationsandvulnerabili )
-Gran_Anse_1<- as.data.frame(Gran_Anse_1)
+Gran_Anse_1 <- Gran_Anse %>%
+  na.omit(Gran_Anse) %>%
+  rename(c("HDVI" = "haitisdeprivationsandvulnerabili", "no_vulnerability" = "non_vulnerable", "less_vulnerability" = "moins_vulnerable",
+           "mid_vulnerability" = "mi_vulnerable", "more_vulnerability" = "plus_vulnerable")) %>%
+  as.data.frame()
 
 #Absence of Food 
 Gran_Anse_1$cat_hh_no_food_at_all1<- as.factor(Gran_Anse_1$cat_hh_no_food_at_all1)
@@ -205,15 +203,15 @@ Gran_Anse_1 <- Gran_Anse_1 %>%
     cat_hh_bed_hungry3 %in% "1" ~ "Often"
   ))
 
-  Gran_Anse_1 <- Gran_Anse_1 %>%
+Gran_Anse_1 <- Gran_Anse_1 %>%
   mutate(Bed_Hungery_depth = case_when(
     cat_hh_bed_hungry1 %in% "1" ~ "1",
     cat_hh_bed_hungry2 %in% "1" ~ "2",
     cat_hh_bed_hungry3 %in% "1" ~ "3"
   )) 
-  
-  
-  
+
+
+
 Gran_Anse_1 <- Gran_Anse_1 %>%
   mutate(Absence_Food = case_when(
     cat_hh_no_food_at_all1 %in% "1" ~ "Never",
@@ -295,7 +293,7 @@ cdplot(cat_hh_no_food_at_all3 ~ HDVI, Gran_Anse_1, col=c("cornflowerblue", "oran
 ## Absence of food - Sometimes 
 
 ```{r Plots2, echo=FALSE}
- cdplot(cat_hh_no_food_at_all2 ~ HDVI, Gran_Anse_1, col=c("cornflowerblue", "orange"), main="Households that sometimes experienced absence of food") 
+cdplot(cat_hh_no_food_at_all2 ~ HDVI, Gran_Anse_1, col=c("cornflowerblue", "orange"), main="Households that sometimes experienced absence of food") 
 
 ```
 
@@ -321,7 +319,7 @@ cdplot(cat_hh_day_no_food2 ~ HDVI, Gran_Anse_1,  col= c("lightblue","darkblue"),
 
 
 cdplot(cat_hh_bed_hungry3 ~ HDVI, Gran_Anse_1, col= c("lightblue","darkblue"), main="Household that often go to bed hungry") 
- 
+
 ```
 
 
@@ -335,14 +333,15 @@ cdplot(cat_hh_bed_hungry2 ~ HDVI, Gran_Anse_1, col= c("lightblue","darkblue"), m
 ## Population distribution - Gone to bed hungry 
 ```{r Plots7, echo=FALSE}
 
-  
+
 
 
 ggplot(Gran_Anse_1, aes(x = HDVI)) +  
   geom_density(aes(group = Bed_Hungery, 
                    colour = Bed_Hungery, 
                    fill = Bed_Hungery),
-               alpha = 0.2) 
+               alpha = 0.2) +
+  theme_minimal()
 
 
 ```
@@ -356,7 +355,8 @@ ggplot(Gran_Anse_1, aes(x = HDVI)) +
   geom_density(aes(group = Absence_Food, 
                    colour = Absence_Food, 
                    fill = Absence_Food),
-               alpha = 0.2)
+               alpha = 0.2) +
+  theme_minimal()
 
 
 ```
@@ -370,7 +370,8 @@ ggplot(Gran_Anse_1, aes(x = HDVI)) +
   geom_density(aes(group = Restricted_Food, 
                    colour = Restricted_Food, 
                    fill = Restricted_Food),
-               alpha = 0.2) 
+               alpha = 0.2) +
+  theme_minimal()
 
 ```
 
@@ -389,3 +390,70 @@ df<- read.csv("D:\\R\\SF_Question.csv")
 p1<- ggplot(Gran_Anse_1, aes(HDVI, Restricted_Food)) + geom_line() + scale_y_reverse() + labs(x="AGE") + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000))
 #the upper panel
 p2<- ggplot(df, aes(TIME2, V2)) + geom_line() + labs(x=NULL) + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + theme(axis.text.x=element_blank())
+```
+
+## Inclusion error & exclusion error, measured against absence of food
+```{r Plots 11, echo=FALSE}
+ie <- function(cutoff, var) {
+  tot_in <- Gran_Anse_1 %>% filter(HDVI >= cutoff)
+  tot_in_nv <- tot_in %>% filter(.data[[var]] != "Often")
+  nrow(tot_in_nv) / nrow(tot_in)
+}
+
+ee <- function(cutoff, var) {
+  tot_v <- Gran_Anse_1 %>% filter(.data[[var]] == "Never")
+  tot_v_ex <- tot_v %>% filter(HDVI < cutoff)
+  nrow(tot_v_ex) / nrow(tot_v)
+}
+
+in_ex1 <- data.frame(cutoff = seq(0.1, 0.9, 0.1)) %>%
+  mutate(label = paste("HDVI:", cutoff))
+in_ex1$in_err <- sapply(in_ex$cutoff, ie, var = "Absence_Food")
+in_ex1$ex_err <- sapply(in_ex$cutoff, ee, var = "Absence_Food")
+
+ggplot(in_ex1, aes(in_err, ex_err)) +
+  geom_point(color = "cornflowerblue", size = 2) +
+  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 0.02, nudge_y = 0, check_overlap = T) +
+  geom_text(aes(x = 0.4, y = 0.35, label = "label = HDVI cutoff"), color = "grey") +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(subtitle = "* vulnerable households defined as those who often experience absence of food",
+       x = "inclusion error", y = "exclusion error")
+
+```
+
+## Inclusion error & exclusion error, measured against restricted food consumption
+```{r Plots 12, echo=FALSE}
+in_ex2 <- data.frame(cutoff = seq(0.1, 0.9, 0.1)) %>%
+  mutate(label = paste("HDVI:", cutoff))
+in_ex2$in_err <- sapply(in_ex$cutoff, ie, var = "Restricted_Food")
+in_ex2$ex_err <- sapply(in_ex$cutoff, ee, var = "Restricted_Food")
+
+ggplot(in_ex2, aes(in_err, ex_err)) +
+  geom_point(color = "cornflowerblue", size = 2) +
+  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 0.02, nudge_y = 0, check_overlap = T) +
+  geom_text(aes(x = 0.4, y = 0.35, label = "label = HDVI cutoff"), color = "grey") +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(subtitle = "* vulnerable households defined as those who often experience restricted food consumption",
+       x = "inclusion error", y = "exclusion error")
+
+```
+
+## Inclusion error & exclusion error, measured against going to bed hungry
+```{r Plots 13, echo=FALSE}
+in_ex3 <- data.frame(cutoff = seq(0.1, 0.9, 0.1)) %>%
+  mutate(label = paste("HDVI:", cutoff))
+in_ex3$in_err <- sapply(in_ex$cutoff, ie, var = "Bed_Hungery")
+in_ex3$ex_err <- sapply(in_ex$cutoff, ee, var = "Bed_Hungery")
+
+ggplot(in_ex3, aes(in_err, ex_err)) +
+  geom_point(color = "cornflowerblue", size = 2) +
+  geom_text(aes(label = cutoff), color = "cornflowerblue", nudge_x = 0.02, nudge_y = 0, check_overlap = T) +
+  geom_text(aes(x = 0.4, y = 0.35, label = "label = HDVI cutoff"), color = "grey") +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  labs(subtitle = "* vulnerable households defined as those who often go to bed hungry",
+       x = "inclusion error", y = "exclusion error")
+
+```
