@@ -244,44 +244,44 @@ Gran_Anse_1 <- Gran_Anse_1 %>%
 
 ```
 
-## Summary Statistics
+<!-- ## Summary Statistics -->
 
-```{r Summary Stat, echo=FALSE}
+<!-- ```{r Summary Stat, echo=FALSE} -->
 
-stargazer(Gran_Anse_1 , type ='text', title="Summary Statistics", align=TRUE, column.sep.width = ".8pt", single.row = TRUE)
+<!-- stargazer(Gran_Anse_1 , type ='text', title="Summary Statistics", align=TRUE, column.sep.width = ".8pt", single.row = TRUE) -->
 
-#stargazer(Gran_Anse_1)
-# knitr::kable(Gran_Anse_1, caption = "Summary Statistics")
-```
-
-
-
-## Summary Statistics
-
-```{r Summary Stat2, echo=FALSE}
-
-stargazer(Gran_Anse_1)
-
-#stargazer(Gran_Anse_1)
-# knitr::kable(Gran_Anse_1, caption = "Summary Statistics")
-```
+<!-- #stargazer(Gran_Anse_1) -->
+<!-- # knitr::kable(Gran_Anse_1, caption = "Summary Statistics") -->
+<!-- ``` -->
 
 
 
-```{r Summary Stat3, echo=FALSE}
+<!-- ## Summary Statistics -->
 
-kable(Gran_Anse_1)
+<!-- ```{r Summary Stat2, echo=FALSE} -->
 
-#stargazer(Gran_Anse_1)
-# knitr::kable(Gran_Anse_1, caption = "Summary Statistics")
-```
-```{r Plots, eval=FALSE, include=FALSE}
-# #Absence of Food
-#
-# cdplot(cat_hh_no_food_at_all1 ~ HDVI, Gran_Anse_1, col=c("cornflowerblue", "orange"), main="Households that never experienced absence of food")
-#
+<!-- stargazer(Gran_Anse_1) -->
 
-```
+<!-- #stargazer(Gran_Anse_1) -->
+<!-- # knitr::kable(Gran_Anse_1, caption = "Summary Statistics") -->
+<!-- ``` -->
+
+
+
+<!-- ```{r Summary Stat3, echo=FALSE} -->
+
+<!-- kable(Gran_Anse_1) -->
+
+<!-- #stargazer(Gran_Anse_1) -->
+<!-- # knitr::kable(Gran_Anse_1, caption = "Summary Statistics") -->
+<!-- ``` -->
+<!-- ```{r Plots, eval=FALSE, include=FALSE} -->
+<!-- # #Absence of Food -->
+<!-- # -->
+<!-- # cdplot(cat_hh_no_food_at_all1 ~ HDVI, Gran_Anse_1, col=c("cornflowerblue", "orange"), main="Households that never experienced absence of food") -->
+<!-- # -->
+
+<!-- ``` -->
 
 ## Absence of food - Often
 
@@ -383,13 +383,13 @@ library(grid)
 library(gridExtra)
 
 ##Import data
-df<- read.csv("D:\\R\\SF_Question.csv")
+# df<- read.csv("D:\\R\\SF_Question.csv")
 
 ##Draw individual plots
 #the lower panel
 p1<- ggplot(Gran_Anse_1, aes(HDVI, Restricted_Food)) + geom_line() + scale_y_reverse() + labs(x="AGE") + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000))
 #the upper panel
-p2<- ggplot(df, aes(TIME2, V2)) + geom_line() + labs(x=NULL) + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + theme(axis.text.x=element_blank())
+# p2<- ggplot(df, aes(TIME2, V2)) + geom_line() + labs(x=NULL) + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + theme(axis.text.x=element_blank())
 ```
 
 ## Inclusion error & exclusion error, measured against absence of food
