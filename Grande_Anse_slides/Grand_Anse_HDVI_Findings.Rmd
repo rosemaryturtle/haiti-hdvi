@@ -120,16 +120,19 @@ library(FSA)
 In the 4 weeks prior to the interview date:
 
 **Absence of Food**
+
 - cat_hh_no_food_at_all1
 - cat_hh_no_food_at_all2
 - cat_hh_no_food_at_all3
 
 **Forced to fast**
-- cat_hh_day_no_food1,
+
+- cat_hh_day_no_food1
 - cat_hh_day_no_food2
 - cat_hh_day_no_food3
 
 **Went to bed hungry**
+
 - cat_hh_bed_hungry1
 - cat_hh_bed_hungry2
 - cat_hh_bed_hungry3
@@ -376,21 +379,21 @@ ggplot(Gran_Anse_1, aes(x = HDVI)) +
 ```
 
 
-## Population distribution - Restricted Consumption
-```{r Plots 10, echo=FALSE}
-library(ggplot2)
-library(grid)
-library(gridExtra)
+<!-- ## Population distribution - Restricted Consumption -->
+<!-- ```{r Plots 10, echo=FALSE} -->
+<!-- library(ggplot2) -->
+<!-- library(grid) -->
+<!-- library(gridExtra) -->
 
-##Import data
-# df<- read.csv("D:\\R\\SF_Question.csv")
+<!-- ##Import data -->
+<!-- # df<- read.csv("D:\\R\\SF_Question.csv") -->
 
-##Draw individual plots
-#the lower panel
-p1<- ggplot(Gran_Anse_1, aes(HDVI, Restricted_Food)) + geom_line() + scale_y_reverse() + labs(x="AGE") + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000))
-#the upper panel
-# p2<- ggplot(df, aes(TIME2, V2)) + geom_line() + labs(x=NULL) + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + theme(axis.text.x=element_blank())
-```
+<!-- ##Draw individual plots -->
+<!-- #the lower panel -->
+<!-- p1<- ggplot(Gran_Anse_1, aes(HDVI, Restricted_Food)) + geom_line() + scale_y_reverse() + labs(x="AGE") + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) -->
+<!-- #the upper panel -->
+<!-- # p2<- ggplot(df, aes(TIME2, V2)) + geom_line() + labs(x=NULL) + scale_x_continuous(breaks = seq(1000,2000,200), limits = c(1000,2000)) + theme(axis.text.x=element_blank()) -->
+<!-- ``` -->
 
 ## Inclusion error & exclusion error, measured against absence of food
 ```{r Plots 11, echo=FALSE}
@@ -476,6 +479,6 @@ ggplot(in_ex3, aes(in_err, ex_err)) +
                      sec.axis = sec_axis(~.*sum(Gran_Anse_1$Absence_Food == "Never")/100, name = "exclusion error (population)")) +
   scale_x_continuous(name = "inclusion error (%)", position = "top",
                      sec.axis = dup_axis(name = "inclusion error (population)", labels = NULL)) +
-  labs(subtitle = "* vulnerable households defined as those who often experience restricted food consumption")
+  labs(subtitle = "* vulnerable households defined as those who often experience going to bed hungry")
 
 ```
