@@ -408,7 +408,7 @@ ie_pop <- function(cutoff, var) {
 }
 
 ee <- function(cutoff, var) {
-  tot_v <- Gran_Anse_1 %>% filter(.data[[var]] == "Never")
+  tot_v <- Gran_Anse_1 %>% filter(.data[[var]] == "Often")
   tot_v_ex <- tot_v %>% filter(HDVI < cutoff)
   nrow(tot_v_ex) / nrow(tot_v) * 100
 }
